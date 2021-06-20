@@ -32,3 +32,8 @@ pre{
 #poetryarea .header h6{
   font-size: 12px;
 }
+
+textarea{
+  text-align: center;  
+  height: 600px !important;
+}

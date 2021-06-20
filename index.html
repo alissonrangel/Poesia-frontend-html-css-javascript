@@ -8,23 +8,25 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">   
   <script>
+
+    let user_id = localStorage.getItem('poesia-user_id');
     let token = localStorage.getItem('poesia-token');
-    if(!token){
-      window.location.href = 'login.html';
-    }
+    // if(!token){
+    //   window.location.href = 'login.html';
+    // }
     function logout() {
       localStorage.removeItem('poesia-token');
+      localStorage.removeItem('poesia-user_id');
       window.location.href = 'login.html';
     }
   </script>
 </head>
 <body>
-  <header>
+  <header id="header">
       <button onclick="logout()" class="btn btn-link">Sair</button> 
   </header>
   <div class="container">
-    <h1>Poesias</h1>
-    <a href="newPoetry.html" >add Poesia</a>    
+    <h1>Poesias</h1>        
     <div id="poetryarea">
     </div>
   </div>
@@ -50,6 +52,13 @@
       }
       console.log(json);
       
+      let header = document.getElementById('header');      
+      //let user_id = localStorage.getItem('poesia-user_id');
+      //alert(user_id);
+      if ( user_id > 0 ){
+        header.innerHTML += `<a href='newPoetry.html' class='btn btn-link'>Add Poesia</a>`;
+      }
+
       let area = document.getElementById('poetryarea');
 
       for (const poetry of json) {
@@ -64,10 +73,21 @@
         let h6d = document.createElement('h6');
         h6d.innerHTML = poetry.date
         header.appendChild(h6d);
-        let btn = document.createElement('button');
-        btn.innerHTML = 'edit'
-        btn.addEventListener('click', ()=>clicar(), true);
-        header.appendChild(btn);
+  
+        if (user_id ==  poetry.user_id){
+          console.log("Entrou");
+          
+          let btn = document.createElement('button');
+          btn.classList.add('btn');
+          btn.classList.add('btn-link');
+          btn.innerHTML = 'edit'
+          btn.addEventListener('click', ()=>atualizar(poetry.id), true);
+          header.appendChild(btn);
+        } else{
+          console.log("Não Entrou");
+          
+        }
+
         let h4 = document.createElement('h4');
         h4.innerHTML = poetry.title;
         let pre = document.createElement('pre');
@@ -83,8 +103,8 @@
       }
     }
 
-    function clicar() {
-      alert('dadaada');
+    function atualizar(id) {
+      window.location.href =`update.html?poesia=${id}`;
     }
 
     function verPoesia(id) {

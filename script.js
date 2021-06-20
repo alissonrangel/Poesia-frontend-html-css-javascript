@@ -27,7 +27,8 @@ async function login(){
     let retorno = await req.json()
 
     if ( !retorno.error ){      
-      await console.log(retorno); 
+      await console.log(retorno);
+      localStorage.setItem('poesia-user_id', retorno.user.id);
       localStorage.setItem('poesia-token', retorno.token);
       window.location.href = 'index.html';
     } else {

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Água de coco e poesia</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">   
+  <link rel="stylesheet" href="style.css">
+</head>
+<script>
+  
+
+  let token = localStorage.getItem('poesia-token');
+  if(!token){
+    window.location.href = 'login.html';
+  }
+
+  let id = '0';
+
+  const poetry = async () => {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('poesia');
+    console.log(myParam)
+    id = myParam;
+    let req = await fetch(`http://127.0.0.1:3000/poetries/${myParam}`);
+
+    const poetry = await req.json();
+
+    if ( poetry.notallowed) {
+      window.location.href = 'login.html';
+      return;
+    }
+    console.log(poetry);
+
+    let area = document.getElementById('poetryarea');
+    let title = document.getElementById('title');
+    let body = document.getElementById('body');
+
+    title.value = poetry.title;
+    body.value = poetry.body;
+
+  }
+
+  poetry();
+
+  const updatePoetry = async () => {
+    let title = document.getElementById('title').value
+    let body = document.getElementById('body').value
+
+    let errors = [];
+
+    if( !title.trim() ){
+      errors.push("Título vazio");
+    }
+    if( !body.trim() ){
+      errors.push("Corpo vazio");
+    }
+
+    if ( errors.length === 0){
+      let req = await fetch(`http://127.0.0.1:3000/poetries/${id}`,{
+        method: 'PUT',
+        body: JSON.stringify({
+          // email: 'alisson@mail.com',
+          // password: '123456'
+          title,
+          body
+        }),
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+      let retorno = await req.json()
+
+      if ( !retorno.error ){      
+        await console.log(retorno); 
+        window.location.href = 'index.html';
+        //localStorage.setItem('poesia-token', retorno.token);
+      } else {
+        alert(retorno.error);
+      }
+    
+    } else {
+      alert(errors.join('\n'));
+    }
+
+  }
+
+</script>
+<body>
+  <!-- <form onsubmit="handleSubmit()"> -->
+      <h1>Atualizar Poesia</h1>
+      <div class="container">
+        <div class="form-group">
+          <label for="title">Título</label>
+          <input type="email" class="form-control" id="title" name="title" >
+        </div>
+        <div class="form-group">
+          <label for="body">Corpo</label>
+          <textarea  class="form-control" id="body" name="body"></textarea>
+        </div>      
+        <button onclick="updatePoetry()" class="btn btn-primary">Atualizar</button>
+      </div>
+    <!-- </form> -->    
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+</body>
+</html>
