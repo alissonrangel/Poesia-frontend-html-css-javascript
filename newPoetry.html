@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Água de coco e poesia</title>
+</head>
+<script>
+  
+
+  let token = localStorage.getItem('poesia-token');
+  if(!token){
+    window.location.href = 'login.html';
+  }
+
+  const newPoetry = async () => {
+    let title = document.getElementById('title').value
+    let body = document.getElementById('body').value
+
+    let errors = [];
+
+    if( !title.trim() ){
+      errors.push("Título vazio");
+    }
+    if( !body.trim() ){
+      errors.push("Corpo vazio");
+    }
+
+    if ( errors.length === 0){
+      let req = await fetch('http://127.0.0.1:3000/poetries',{
+        method: 'POST',
+        body: JSON.stringify({
+          // email: 'alisson@mail.com',
+          // password: '123456'
+          title,
+          body
+        }),
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+      let retorno = await req.json()
+
+      if ( !retorno.error ){      
+        await console.log(retorno); 
+        window.location.href = 'index.html';
+        //localStorage.setItem('poesia-token', retorno.token);
+      } else {
+        alert(retorno.error);
+      }
+    
+    } else {
+      alert(errors.join('\n'));
+    }
+
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    //setDisabled(true);
+    setError('');
+    let errors = [];
+
+    if(!title.trim()){
+      errors.push('Sem título');
+    }
+    if(!body){
+      errors.push('Sem corpo da poesia');
+    }
+
+    if ( errors.length === 0){
+      // const fData = new FormData();
+      // fData.append('title', title);
+      // fData.append('price', price);
+      // fData.append('featured_image', featuredImage);
+      // // fData.append('priceneg', priceNegotiable);
+      // fData.append('priceNegotiable', priceNegotiable);
+      // fData.append('desc', desc);
+      // fData.append('image', 'default.png');
+      // fData.append('cat', category);
+
+      // if ( fileField.current.files.length > 0){
+      //   for (let i = 0; i < fileField.current.files.length; i++) {
+      //     fData.append('featured_image', fileField.current.files[i]);          
+      //   }
+      // }
+
+      const body = {
+        title: document.getElementsByTagName('title').value,
+        body: document.getElementsByName('body').value
+      };
+
+      const json = await api.addPoetry(body);
+
+      if (!json.error){ 
+        alert('Poesia criada com sucesso!!!')       
+        window.location.href = 'index.html';
+        return;
+      } else {
+        alert(json.error);
+      }
+
+    } else{
+      alert(errors.join('\n'));      
+    }
+  }
+</script>
+<body>
+  <!-- <form onsubmit="handleSubmit()"> -->
+      <div class="container">
+          <div class="form-group">
+            <label for="title">Título</label>
+            <input type="email" class="form-control" id="title" name="title" >
+          </div>
+          <div class="form-group">
+            <label for="body">Corpo</label>
+            <textarea  class="form-control" id="body" name="body"></textarea>
+          </div>      
+          <button onclick="newPoetry()" class="btn btn-primary">Nova Poesia</button>
+        </div>
+    <!-- </form> -->    
+</body>
+</html>

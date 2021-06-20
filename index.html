@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Água de coco e poesia</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    let token = localStorage.getItem('poesia-token');
+    if(!token){
+      window.location.href = 'login.html';
+    }
+    function logout() {
+      localStorage.removeItem('poesia-token');
+      window.location.href = 'login.html';
+    }
+  </script>
+</head>
+<body>
+  <h1>Poesias</h1>
+  <a href="newPoetry.html" >add Poesia</a>
+  <button onclick="logout()">Sair</button> 
+  <div id="poetryarea">
+    
+  </div>
+  <!-- <div id="model" class="modelo">
+    <div class="header">
+      <h6 class="author"></h6>
+      <h6 class="date"></h6>
+    </div>
+    <h2 class="title"></h2>
+    <p class="body"></p>
+  </div> -->
+  <script>
+    
+    const listPoetries = async () => {
+
+      let req = await fetch('http://127.0.0.1:3000/poetries');
+    
+      const json = await req.json();
+
+      if ( json.notallowed) {
+        window.location.href = 'login.html';
+        return;
+      }
+      console.log(json);
+      
+      let area = document.getElementById('poetryarea');
+
+      for (const poetry of json) {
+        let modelo = document.createElement('div');
+        modelo.classList.add('modelo');
+        let header = document.createElement('div');
+        let h6 = document.createElement('h6');
+        header.appendChild(h6);
+        let h2 = document.createElement('h2');
+        h2.innerHTML = poetry.title;
+        let pre = document.createElement('pre');
+        pre.innerHTML = poetry.body;
+        modelo.appendChild(header);
+        modelo.appendChild(h2);
+        modelo.appendChild(pre);
+        area.appendChild(modelo);
+      }
+    }
+
+    listPoetries();
+  
+  </script>
+</body>
+</html>
